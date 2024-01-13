@@ -1,86 +1,192 @@
-import React from 'react';
-import MapView from 'react-native-maps';
-import { StyleSheet, View,Text, Button,Image,TouchableOpacity} from 'react-native';
+import React, { useState,useLayoutEffect } from 'react';
+import { Alert, StyleSheet, View, Text, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { auth, database } from "../config/firebase";
+import {collection,addDoc,orderBy,query,onSnapshot,setDoc,doc,getDoc,where, updateDoc} from 'firebase/firestore';
+import SlotRow from '../components/SlotRow';
+import colors from '../colors';
 
 export default function Home() {
-  const navigation=useNavigation();
+  const navigation = useNavigation();
+  const [isSeatBooked, setIsSeatBooked] = useState(false);
+  const[slot,setSlot]=useState([]);
+  const [bookedCount,setBookedCount]=useState(0);
+  const [area,SetArea]=useState("");
+
+  const currentmail=auth.currentUser.email;
+const id=currentmail.split("@")[0];
+
+  const handleBookSeat = () => {
+    Alert.alert(
+      'Book Seat',
+      'Are you sure you want to book this seat?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'OK', onPress: () => setIsSeatBooked(true) },
+      ],
+      { cancelable: false }
+    );
+  };
+
+const collectionRef = collection(database, "Slot");
+
+useLayoutEffect(() => {
+  const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+    const slotData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      booked: doc.data().booked
+    }));
+
+    const bookedCount = slotData.reduce((count, slot) => {
+      return count + (slot.booked ? 1 : 0);
+    }, 0);
+
+    setSlot(slotData);
+    setBookedCount(bookedCount); // Assuming you have a state variable named bookedCount
+    console.log(querySnapshot.size);
+  });
+
+  return unsubscribe;
+}, []);
+
+
+const collectionRef1 = collection(database, "Area");
+useLayoutEffect(() => {
+
+    const unsubscribe = onSnapshot(collectionRef1, querySnapshot => {
+      
+        querySnapshot.docs.map(doc => 
+          (
+          
+            SetArea(doc.data().place)
+        ))
+      
+      
+      console.log(querySnapshot.size);
+    });        
+  
+  return unsubscribe;
+  }, 
+  
+  []); 
+
+console.log(slot.length,"--<");
+console.log(area);
   return (
     <View style={styles.container}>
+      <Text style={{ fontWeight: 'bold', fontSize: 21,marginBottom:5 }}>Welcome to Parkwise</Text>
+     <View style={{marginBottom:15,flexDirection:'row',justifyContent:'space-between'}}>
+     <Text style={{ fontSize: 16,color:'grey'}}>{area}</Text> 
+     <Text style={{ fontSize: 16,color:'grey'}}>F-1</Text>
+     </View>
 
-      <View style={{height:200,justifyContent:"center",alignItems:"center"}}>
+      <ScrollView>
+      <View style={{ backgroundColor: colors.primary, height: 100,borderTopStartRadius:10,borderTopRightRadius:10,padding:20,justifyContent:'space-between',flexDirection:'row',}}>
 
-        <Image source={{uri:'https://shorturl.at/afmG1'}}  style={{height:180,width:180}}/>
-      </View>
-      <Text style={{fontSize:20,fontWeight:"bold",paddingLeft:5}}>Admin Dashboard</Text>
+<View style={{backgroundColor:'orange',width:60,height:60,justifyContent:'center',alignItems:'center'}}>
+<Text style={{fontSize:25,fontWeight:'bold',color:'white'}}>{slot.length}</Text>  
+</View> 
 
-      <View style={{flexDirection:"row",justifyContent:"space-between",marginTop:20}}>
+<View style={{backgroundColor:'#50C878',width:60,height:60,justifyContent:'center',alignItems:'center'}}>
+<Text style={{fontSize:25,fontWeight:'bold',color:'white'}}>{bookedCount}</Text>  
+</View> 
+<View style={{backgroundColor:'red',width:60,height:60,justifyContent:'center',alignItems:'center'}}>
+<Text style={{fontSize:25,fontWeight:'bold',color:'white'}}>{slot.length-bookedCount}</Text>  
+</View>
+</View>
+<View style={{ borderStyle: 'dashed', borderWidth: 1, borderColor: '#909090', paddingTop: 30 }}>
+  {/* 1st Row */}
+ 
+  {slot.map((item, index) => (
+index % 2 === 0 && (
 
-      <TouchableOpacity onPress={()=>navigation.navigate('TotalHouse')}>
-      <View style={styles.box}>
-      
-      <Text style={{fontWeight:"bold",fontSize:18,color:"white",textAlign:'center'}}>Total Houses</Text>
-      <Text style={{fontWeight:"bold",fontSize:30,color:"white",textAlign:'center',marginTop:10}}>3</Text>
-
-      </View>
-      </TouchableOpacity>
-
-
-      <TouchableOpacity onPress={()=>navigation.navigate('Leakage')}>
-
-      <View style={styles.box}>
-
-<Text style={{fontWeight:"bold",fontSize:18,color:"white",textAlign:"center"}}>Leakage Alerts</Text>
-<Text style={{fontWeight:"bold",fontSize:30,color:"white",textAlign:'center',marginTop:10}}>2</Text>
-
+<View>
+<SlotRow slot1={item?.booked} slot2={slot[index+1]?.booked} slotid1={slot[index]?.id} slotid2={slot[index+1]?.id} email={id} key={index}/>
+ {
+  (index+2)!=slot.length && (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{ borderWidth: 0.9, borderStyle: 'dashed', borderColor: '#909090', marginBottom: 5, width: '45%' }}></View>
+      <View style={{ borderWidth: 0.9, borderStyle: 'dashed', borderColor: '#909090', marginBottom: 5, width: '45%' }}></View>
+    </View>
+   )
+ }
 </View>
 
-      </TouchableOpacity>
-      
-      </View>
 
-      <View style={{flexDirection:"row",justifyContent:"space-between",marginTop:20}}>
-      <View style={styles.box}>
-
-      <Text style={{fontWeight:"bold",fontSize:18,color:"white",textAlign:"center"}}>Complaints</Text>
-      <Text style={{fontWeight:"bold",fontSize:30,color:"white",textAlign:'center',marginTop:10}}>2</Text>
-
-      </View>
-
-      <View style={styles.box}>
-
-      <Text style={{fontWeight:"bold",fontSize:18,color:"white",textAlign:"center"}}>Resolved</Text>
-      <Text style={{fontWeight:"bold",fontSize:30,color:"white",textAlign:'center',marginTop:10}}>1</Text>
+)
+))}
 
 
-      </View>
-      </View>
-      <View style={{marginTop:40}}></View>
 
-      {/* 12.960379137666333, 80.05738831510715 */}
+{/* <View>
+<SlotRow slot1={true} slot2={false} slotid1={slot[0].id} slotid2={slot[1].id}/>
+ <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+    <View style={{ borderWidth: 0.9, borderStyle: 'dashed', borderColor: '#909090', marginBottom: 5, width: '45%' }}></View>
+    <View style={{ borderWidth: 0.9, borderStyle: 'dashed', borderColor: '#909090', marginBottom: 5, width: '45%' }}></View>
+  </View>
+</View> */}
+</View>
+<View style={{height:50,flexDirection:'row',backgroundColor:colors.primary}}>
 
-      {/* <View style={{height:70,width:180,backgroundColor:"blue",borderRadius:20,justifyContent:"center",alignItems:"center",alignSelf:"center"}}>
-        <Text style={{fontWeight:"bold",color:"white"}}>Analyze Distribution Lines</Text>
-      </View> */}
+<View style={{width:'50%',height:50,justifyContent:'center',alignItems:'center'}}>
+<Text style={{fontWeight:'bold',color:'white'}}>ENTRY</Text>
+</View> 
+<View style={{width:'55%',height:50,justifyContent:'center',alignItems:'center'}}>
+<Text style={{fontWeight:'bold',color:'white'}}>EXIT</Text>
+</View>
 
-      <Button title="Analyze Distribution Lines" onPress={()=>navigation.navigate('Gismap')} color="blue"/>
+</View>
+      </ScrollView>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding:20,
-    //backgroundColor:"blue"
-   
+    padding: 25,
+    marginTop: 40,
   },
-  box:{
-    width:180,
-    height:120,
-    backgroundColor:"blue", 
-    borderRadius:10,
-    padding:15
-  }
-  
 });
+   // <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
+    //   <TouchableOpacity onPress={handleBookSeat} disabled={isSeatBooked}>
+    //     <View
+    //       style={{
+    //         width: 120,
+    //         height: 60,
+    //         borderWidth: 1,
+    //         borderColor: '#1a73e8',
+    //         borderRadius: 8,
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //         backgroundColor: isSeatBooked ? '#1a73e8' : 'transparent',
+    //       }}
+    //     >
+    //       {isSeatBooked ? (
+    //         <Image source={require('../assets/car.png')} style={{ width: 70, height: 70, transform: [{ rotate: '270deg' }] }} />
+    //       ) : (
+    //         <Text style={{ fontWeight: 'bold' }}>{item.id}</Text>
+    //       )}
+    //     </View>
+    //   </TouchableOpacity>
+    //   <View style={{ height: '100%', width: 1, backgroundColor: '#909090' }}></View>
+    //   <TouchableOpacity onPress={handleBookSeat} disabled={isSeatBooked}>
+    //     <View
+    //       style={{
+    //         width: 120,
+    //         height: 60,
+    //         borderWidth: 1,
+    //         borderColor: '#1a73e8',
+    //         borderRadius: 8,
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //         backgroundColor: isSeatBooked ? '#1a73e8' : 'transparent',
+    //       }}
+    //     >
+    //       {isSeatBooked ? (
+    //         <Image source={require('../assets/car.png')} style={{ width: 70, height: 70, transform: [{ rotate: '90deg' }] }} />
+    //       ) : (
+    //         <Text style={{ fontWeight: 'bold' }}>{item.id}</Text>
+    //       )}
+    //     </View>
+    //   </TouchableOpacity>
+    // </View>
