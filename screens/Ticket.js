@@ -10,9 +10,9 @@ import DropCard from '../components/Dropcard';
 export default function Ticket() {
 
 
-    const [ticket,setTicket]=useState([]);
+  const [ticket,setTicket]=useState([]);
   const [BookedTime,SetBookedTime]=useState("");
-  const [area,SetArea]=useState("");
+ 
 
 
 const currentmail=auth.currentUser.email;
@@ -42,25 +42,7 @@ const collectionRef = collection(database, `Users/${id}/BookedTickets`);
       []); 
 
 
-      const collectionRef1 = collection(database, "Area");
-    useLayoutEffect(() => {
 
-        const unsubscribe = onSnapshot(collectionRef, querySnapshot => {
-          SetArea(
-            querySnapshot.docs.map(doc => 
-              (
-              {
-                place:doc.data().place,
-            }))
-          )
-          
-          console.log(querySnapshot.size);
-        });        
-      
-      return unsubscribe;
-      }, 
-      
-      []); 
       console.log(ticket);
 
   return (

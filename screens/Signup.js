@@ -77,7 +77,7 @@ function Signup(){
             </View> */}
 
             <View style={styles.container3}>
-            <Text style={{fontSize:40,fontStyle:'italic',fontWeight:'bold',color:'white',alignSelf:'center'}}>Park Wise</Text>
+            <Text style={{fontSize:40,fontStyle:'italic',fontWeight:'bold',color:'white',alignSelf:'center'}}>Vatten Admin</Text>
             <View style={{marginTop:50}}>
             <Text style={{fontWeight:"bold",fontSize:30,textAlign:"center",color:"white"}}>Signup</Text>
 

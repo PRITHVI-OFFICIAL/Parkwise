@@ -29,7 +29,7 @@ function Login(){
                source={require('../assets/logo.png')}
                 style={{width: 300, height: 200,alignSelf:"center"}}
             />  */}
-            <Text style={{fontSize:40,fontStyle:'italic',fontWeight:'bold',color:'white',alignSelf:'center'}}>Park Wise</Text>
+            <Text style={{fontSize:40,fontStyle:'italic',fontWeight:'bold',color:'white',alignSelf:'center'}}>Vatten Admin</Text>
             </View>
 
             {/* <View style={styles.container2}>
@@ -41,7 +41,7 @@ function Login(){
 
             <View style={styles.container3}>
             <View style={{marginTop:10}}>
-            <Text style={{fontWeight:"bold",fontSize:30,textAlign:"center",color:"white"}}>Login Page</Text>
+            <Text style={{fontWeight:"bold",fontSize:30,textAlign:"center",color:"white"}}>Login</Text>
             
         <TextInput
             style={styles.input}

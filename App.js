@@ -10,11 +10,14 @@ import { auth } from './config/firebase';
 import { FontAwesome } from '@expo/vector-icons';
 import colors from "./colors";
 import Login from './screens/Login';
-import Home from './screens/Home';
+import Home1 from './screens/Home1';
 import Signup from "./screens/Signup";
 // import AddBuses from "./screens/AddBuses";
 import UserProfile from "./screens/UserProfile";
 import Ticket from './screens/Ticket';
+import Gismap from './screens/Gismap';
+import Leakage from './screens/Leakage';
+import TotalHouse from './screens/TotalHouse';
 
 
 
@@ -46,17 +49,20 @@ function HomeStack() {
         tabBarStyle:  { height: 60}
       } 
     }>
-      <Tab.Screen name="Home" component={Home}  options={{ tabBarIcon:({size,color})=>(
+
+      <Tab.Screen name="Home" component={Home1}  options={{ tabBarIcon:({size,color})=>(
             <FontAwesome name="home" size={25} color={colors.primary} />
           ),}} />
-      
-      <Tab.Screen name="Ticket" component={Ticket}  options={{ tabBarIcon:({size,color})=>(
-            <FontAwesome name="ticket" size={25} color={colors.primary} />
-          ),}} />
+
+
 
       <Tab.Screen name="User" component={UserProfile}  options={{ tabBarIcon:({size,color})=>(
             <FontAwesome name="user" size={25} color={colors.primary} />
           ),}} /> 
+
+<Tab.Screen name="TotalHouse" component={TotalHouse} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />
+<Tab.Screen name="Gismap" component={Gismap} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />  
+<Tab.Screen name="Leakage" component={Leakage} options={{ tabBarVisible: false,tabBarButton: (props) => null,tabBarStyle: { display: "none" }}} />     
 
 
     </Tab.Navigator>
